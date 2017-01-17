@@ -1,0 +1,31 @@
+CREATE FUNCTION  (geom_a sdo_geometry, geom_b sdo_geometry) RETURN SDO_GEOMETRY
+
+BEGIN
+
+  SDO_GEOM.SDO_CLOSEST_POINTS
+  (
+    Cur_Mains_Events_Recs.event_geom,
+    Cur_Mains_Events_Recs.sewer_geom,
+    v_tol,
+    v_unit,
+    v_dist,
+    v_geoma_output,
+    v_geomb_output
+    
+  );
+
+  If v_dist = 0 Then
+  
+    geometry:=sdo_geometry(2001,27700,SDO_POINT_TYPE(v_geomb_output.sdo_point.x,v_geomb_output.sdo_point.y,NULL),NULL,NULL);
+  
+  Else 
+  
+    geometry:=sdo_geometry(2002,27700,NULL,sdo_elem_info_array(1,2,1),sdo_ordinate_array (v_geoma_output.sdo_point.x,v_geoma_output.sdo_point.y,v_geomb_output.sdo_point.x,v_geomb_output.sdo_point.y));
+  
+  End If;
+  
+  RETURN Geometry;
+
+END;
+
+
